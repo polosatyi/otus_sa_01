@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otusapp-deployment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: otusapp-app
+  template:
+    metadata:
+      labels:
+        app: otusapp-app
+    spec:
+      containers:
+      - name: otusapp
+        image: rksalov/otusapp:v1
+        ports:
+          - name: web
+            containerPort: 8000
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: web
+          initialDelaySeconds: 2
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 1
+
+        readinessProbe:
+          httpGet:
+            path: /health/
+            port: web
+          initialDelaySeconds: 2
+          periodSeconds: 5
